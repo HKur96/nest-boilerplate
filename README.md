@@ -97,7 +97,7 @@
   <p>This project is licensed under the <a href="LICENSE">MIT License</a>.</p>
   <h2>Authors</h2>
   <ul>
-    <li><a href="https://github.com/Hkur96">Patrick Navega</a></li>
+    <li><a href="https://github.com/Hkur96">Hari Kurniawan</a></li>
   </ul>
   <p>Enjoy building amazing applications with Nest.js, PostgreSQL, and Prisma!</p>
 </body>
