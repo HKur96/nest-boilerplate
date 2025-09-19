@@ -7,9 +7,109 @@ datasource db {
   url = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+model City {
+  id           Int          @id @default(autoincrement())
+  name         String       @unique
+  latitude     Float?
+  longitude    Float?
+  radiusMeters Int          // allowed attendance radius in meters
+  buildings    Building[]
+  users        User[]
+  workingPlans WorkingPlan[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Building {
+  id           Int          @id @default(autoincrement())
+  name         String
+  city         City?        @relation(fields: [cityId], references: [id])
+  cityId       Int?
+  latitude     Float
+  longitude    Float
+  radiusMeters Int
+  users        User[]
+  attendances  Attendance[]
+  workingPlans WorkingPlan[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  name      String?
-  password  String?
+  id             Int            @id @default(autoincrement())
+  name           String
+  email          String         @unique
+  password       String
+  role           Role           @default(EMPLOYEE)
+  city           City?          @relation(fields: [cityId], references: [id])
+  cityId         Int?
+  building       Building?      @relation(fields: [buildingId], references: [id])
+  buildingId     Int?
+  attendances    Attendance[]
+  planAssignments PlanAssignment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Attendance {
+  id             Int       @id @default(autoincrement())
+  user           User      @relation(fields: [userId], references: [id])
+  userId         Int
+  building       Building  @relation(fields: [buildingId], references: [id])
+  buildingId     Int
+  shift          Shift?    @relation(fields: [shiftId], references: [id])
+  shiftId        Int?
+  checkIn        DateTime
+  checkOut       DateTime?
+  checkInLat     Float
+  checkInLng     Float
+  checkOutLat    Float?
+  checkOutLng    Float?
+  inRange        Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model WorkingPlan {
+  id            Int          @id @default(autoincrement())
+  name          String
+  description   String?
+  startDate     DateTime
+  endDate       DateTime
+  city          City?       @relation(fields: [cityId], references: [id])
+  cityId        Int?
+  building      Building?   @relation(fields: [buildingId], references: [id])
+  buildingId    Int?
+  shifts        Shift[]
+  assignments   PlanAssignment[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Shift {
+  id            Int         @id @default(autoincrement())
+  workingPlan   WorkingPlan @relation(fields: [workingPlanId], references: [id])
+  workingPlanId Int
+  name          String      // e.g., Morning
+  date          DateTime
+  startTime     DateTime
+  endTime       DateTime
+  attendances   Attendance[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model PlanAssignment {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  workingPlan   WorkingPlan @relation(fields: [workingPlanId], references: [id])
+  workingPlanId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }

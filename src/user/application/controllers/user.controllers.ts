@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { CreateUserUseCase } from '../../data/use-cases/createUser.usecase';
 import { CreateUserDto } from 'src/user/dtos/createUser.dto';
 
